@@ -5,8 +5,8 @@ import { createSearchAction } from 'redux-search';
 import { Map } from 'immutable';
 
 import { incrementCollCount } from 'redux/modules/auth';
-import { deleteCollection, load as loadColl } from 'redux/modules/collection';
-import { addTo, load as loadList, removeBookmark, saveSort } from 'redux/modules/list';
+import { deleteCollection, load as loadColl, newAuto, queueAuto } from 'redux/modules/collection';
+import { addTo, bulkAddTo, load as loadList, removeBookmark, saveSort, create as createList } from 'redux/modules/list';
 import { isLoaded as isRBLoaded, load as loadRB } from 'redux/modules/remoteBrowsers';
 import { deleteUserCollection } from 'redux/modules/user';
 import { deleteRecording } from 'redux/modules/recordings'
@@ -130,6 +130,16 @@ const mapDispatchToProps = (dispatch, { history, match: { params: { user, coll }
     saveBookmarkSort: (list, ids) => {
       dispatch(saveSort(user, coll, list, ids));
     },
+
+    startAuto: (user, coll, listTitle, bookmarks) => {
+      let listId;
+      let autoId;
+      dispatch(createList(user, coll, listTitle))
+        .then(({ list }) => { listId = list.id; return dispatch(newAuto(user, coll)); })
+        .then(({ auto }) => { autoId = auto; return dispatch(bulkAddTo(user, coll, listId, bookmarks)); })
+        .then(res => dispatch(queueAuto(user, coll, autoId, listId)));
+    },
+
     searchPages: createSearchAction('collection.pages'),
     dispatch
   };

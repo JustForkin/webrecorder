@@ -11,6 +11,10 @@ const LIST_ADD = 'wr/list/LIST_ADD';
 const LIST_ADD_SUCCESS = 'wr/list/LIST_ADD_SUCCESS';
 const LIST_ADD_FAIL = 'wr/list/LIST_ADD_FAIL';
 
+const BULK_ADD = 'wr/list/BULK_ADD';
+const BULK_ADD_SUCCESS = 'wr/list/BULK_ADD_SUCCESS';
+const BULK_ADD_FAIL = 'wr/list/BULK_ADD_FAIL';
+
 const LIST_LOAD = 'wr/list/LIST_LOAD';
 const LIST_LOAD_SUCCESS = 'wr/list/LIST_LOAD_SUCCESS';
 const LIST_LOAD_FAIL = 'wr/list/LIST_LOAD_FAIL';
@@ -92,8 +96,19 @@ export function create(user, coll, title) {
 
 export function addTo(user, coll, listId, data) {
   return {
-    types: [LIST_CREATE, LIST_CREATE_SUCCESS, LIST_CREATE_FAIL],
+    types: [LIST_ADD, LIST_ADD_SUCCESS, LIST_ADD_FAIL],
     promise: client => client.post(`${apiPath}/list/${listId}/bookmarks`, {
+      params: { user, coll },
+      data
+    })
+  };
+}
+
+
+export function bulkAddTo(user, coll, listId, data) {
+  return {
+    types: [BULK_ADD, BULK_ADD_SUCCESS, BULK_ADD_FAIL],
+    promise: client => client.post(`${apiPath}/list/${listId}/bulk_bookmarks`, {
       params: { user, coll },
       data
     })
